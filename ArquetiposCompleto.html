@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+
+    <title>Calculador Arquetipos</title>
+	<style>
+		body {
+			background-color: #DADADA;
+		}
+
+		p {
+			color: white;
+		}
+
+		input {
+			width: 1000px;
+		}
+	</style>
+</head>
+
+<body>
+	<main class="ui container">
+		<div></div>
+		<h1 class="ui dividing header"> Calculador de Arquetipos </h1>
+		<div class="ui segment">
+			<form id="form-suggestions" class="ui equal width form" action="javascript:;calcArcanos();" method="POST">
+				<div class="inline fields">
+					<div class="field">
+						<label for="suggestion" class="ui compact large right label"> Nome Completo: </label>
+						<div class="ui input">
+							<input type="text" class="ui input" id="fullname" name="fullname" value="" placeholder="Escrever o nome completo..." required>
+						</div>
+					</div>
+					<div class="field">
+						<label for="examples" class="ui large right label"> Data de nascimento: </label>
+						<div class="ui input">
+							<input type="text" class="ui input focus" id="birthdate" name="birthdate" 
+								placeholder="dd/mm/yyyy" maxlength="10" onkeyup="javascript:;maskDate(this, event);" required>
+						</div>
+					</div>
+					<div class="field">
+						<button type="reset" class="tiny ui basic button" onclick="javascript:;cleanTable();" >Limpar</button>
+						<button type="submit" class="tiny ui grey button">Calcular</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div id="resultsTable" name="divtable" style="display:none;color:white">
+			<div class="ui segment">
+				<h3 class="ui dividing header">Arcanos</h3>
+				<table class="ui small compact celled striped table">
+					<thead>
+						<tr>
+							<th>1o Arcano</th>
+							<th>2o Arcano</th>
+							<th>3o Arcano</th>
+							<th>4o Arcano</th>
+							<th>5o Arcano</th>
+							<th>Arcano da Alma</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td id="arcanoUm" data-label="1o Arcano"></td>
+							<td id="arcanoDois" data-label="2o Arcano"></td>
+							<td id="arcanoTres" data-label="3o Arcano"></td>
+							<td id="arcanoQuatro" data-label="4o Arcano"></td>
+							<td id="arcanoCinco" data-label="5o Arcano"></td>
+							<td id="arcanoAlma" data-label="Arcano da Alma"></td>
+						</tr>
+						<tr class="center aligned">
+							<td class="ui red" colspan="6">Arquetipos Adicionais</td>
+						</tr>
+						<tr>
+							<td id="arcanoUmFlow" data-label="1o Arcano"></td>
+							<td id="arcanoDoisFlow" data-label="2o Arcano"></td>
+							<td id="arcanoTresFlow" data-label="3o Arcano"></td>
+							<td id="arcanoQuatroFlow" data-label="4o Arcano"></td>
+							<td id="arcanoCincoFlow" data-label="5o Arcano"></td>
+							<td id="arcanoAlmaFlow" data-label="Arcano da Alma"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="ui segment">
+				<h3 class="ui dividing header">Fluxos</h3>
+				<table class="ui compact celled table">
+					<thead>
+						<tr>
+							<th>Fluxo 1</th>
+							<th>Fluxo 2</th>
+							<th>Fluxo 3</th>
+							<th>Fluxo 4</th>
+							
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td data-label="Fluxo 1">Arcano 1 - O Mago</td>
+							<td data-label="Fluxo 2">Arcano 2 - A Papisa</td>
+							<td data-label="Fluxo 3">Arcano 3 - A Imperatriz</td>
+							<td data-label="Fluxo 4">Arcano 4 - O Imperador</td>
+						</tr>
+						<tr>
+							<td data-label="Fluxo 1">Arcano 10 - A Roda da Fortuna</td>
+							<td data-label="Fluxo 2">Arcano 11 - A Força</td>
+							<td data-label="Fluxo 3">Arcano 12 - O Enforcado</td>
+							<td data-label="Fluxo 4">Arcano 13 - A Morte</td>							
+						</tr>
+						<tr>
+							<td data-label="Fluxo 1">Arcano 19 - O Sol</td>
+							<td data-label="Fluxo 2">Arcano 20 - O Julgamento</td>
+							<td data-label="Fluxo 3">Arcano 21 - O Mundo</td>
+							<td data-label="Fluxo 4">Arcano 22 - O Louco</td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="ui compact celled table">
+					<thead>
+						<tr>
+							<th>Fluxo 5</th>
+							<th>Fluxo 6</th>
+							<th>Fluxo 7</th>
+							<th>Fluxo 8</th>
+							<th>Fluxo 9</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td data-label="Fluxo 5">Arcano 5 - O Papa</td>
+							<td data-label="Fluxo 6">Arcano 6 - O Enamorado</td>
+							<td data-label="Fluxo 7">Arcano 7 - O Carro</td>
+							<td data-label="Fluxo 8">Arcano 8 - A Justiça</td>
+							<td data-label="Fluxo 9">Arcano 9 - O Eremita</td>
+						</tr>
+						<tr>
+							<td data-label="Fluxo 5">Arcano 14 - A Temperança</td>
+							<td data-label="Fluxo 6">Arcano 15 - O Diabo</td>
+							<td data-label="Fluxo 7">Arcano 16 - A Torre</td>
+							<td data-label="Fluxo 8">Arcano 17 - A Estrela</td>
+							<td data-label="Fluxo 9">Arcano 18 - A Lua</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+</body>
+<script>
+
+	function maskDate(strDate, e) {
+		const mask = "##/##/####";
+		let keyButton ="";
+		
+		if (document.all) {
+			keyButton = event.keyCode;
+		} else {
+			keyButton = e.which;
+		}
+		
+		if(keyButton != 8){
+			if (strDate.value.length == strDate.maxlength) {
+				return;
+			}
+			let index = strDate.value.length;
+			let result = mask.substring(0,1);
+			let date = mask.substring(index);
+			if (date.substring(0,1) != result) {
+				strDate.value += date.substring(0,1);
+			}
+		}
+	}
+
+	function cleanTable() {
+		document.getElementById('fullname').value = "";
+		document.getElementById('birthdate').value = "";
+		let tables = document.getElementsByName("divtable");
+		tables.forEach(table => table.style.display = 'block');
+		document.getElementById("resultsTable").style.display = 'none';
+	}
+
+	function showTable() {
+		let tables = document.getElementsByName("divtable");
+		tables.forEach(table => table.style.display = 'none');
+		document.getElementById("resultsTable").style.display = 'block';
+	}
+
+	function calcArcanos() {
+		const name = document.getElementById('fullname').value;
+		const birthdate = document.getElementById('birthdate').value;
+		const date = getDate(birthdate);
+
+		if (date.length === 3) {
+				let arcanos = [];
+				arcanos[0] = arcanoUm(name);
+				arcanos[1] = arcanoDois(date);
+				arcanos[2] = arcanoTres(date);
+				arcanos[3] = arcanoQuatro(name, date);
+				arcanos[4] = arcanoCinco(arcanos[0], arcanos[1], arcanos[2], arcanos[3]);
+				arcanos[5] = arcanoAlma(date);
+
+				showTable();
+				printTable(arcanos);
+				printFlow(arcanos);		
+		}
+	}
+
+	function printTable(arcanos) {
+		const arquetipos = ["0 - O Louco", "1 - O Mago", "2 - A Papisa", "3 - A Imperatriz", "4 - O Imperador", "5 - O Papa", "6 - O Enamorado", "7 - O Carro", "8 - A Justiça", "9 - O Eremita", "10 - A Roda da fortuna", "11 - A Força", "12 - O Enforcado", "13 - A Morte", "14 - A Temperança", "15 - O Diabo", "16 - A Torre", "17 - A Estrela", "18 - A Lua", "19 - O Sol", "20 - O Julgamento", "21 - O Mundo", "0 - O Louco"]
+		const fields = ["arcanoUm", "arcanoDois", "arcanoTres", "arcanoQuatro", "arcanoCinco", "arcanoAlma"];
+
+		fields.forEach(label => {
+			const valueArcano = arcanos[fields.indexOf(label)];
+			document.getElementById(label).innerHTML = arquetipos[valueArcano];
+		});
+	}
+
+	function printFlow(arcanos) {
+		const flows = ["Fluxo 0", "Fluxo 1", "Fluxo 2", "Fluxo 3", "Fluxo 4", "Fluxo 5", "Fluxo 6", "Fluxo 7", "Fluxo 8", "Fluxo 9"];
+		const fieldsFlow = ["arcanoUmFlow", "arcanoDoisFlow", "arcanoTresFlow", "arcanoQuatroFlow", "arcanoCincoFlow", "arcanoAlmaFlow"];
+
+		fieldsFlow.forEach(label => {
+			const valueFlow = arcanos[fieldsFlow.indexOf(label)];
+			document.getElementById(label).innerHTML = getFlow(valueFlow, flows);
+		});
+	}
+
+	function getFlow(value, flows) {
+		return flows[reductionFlow(value)];
+	}
+
+	function reductionFlow(number) {
+		const newNumber = sumNumbers(number);
+		if (newNumber > 9) {
+			return reductionFlow(newNumber);
+		}
+		return newNumber;
+	}
+
+	function arcanoUm(name) {
+		let sumNumber = 0;
+		[...name].forEach(letter => sumNumber += getConvertedLetter(letter));
+		return reduction(sumNumber);
+	}
+
+	function arcanoDois(date) {
+		return reduction(date[2]);
+	}
+
+	function arcanoTres(date) {
+		const newNumber = sumNumbers(date[2]);
+		const second = arcanoDois(date);
+		if (getLength(newNumber) == 1) {
+			return newNumber;
+		} else if (getLength(second) == 1) {
+			return second + getNum(date[1]);
+		} else {
+			return reduction(second);
+		}
+	}
+
+	function arcanoQuatro(name, date) {
+		const second = arcanoDois(date);
+		if (getLength(second) == 1) {
+			let sumArcano12 = arcanoUm(name) + second;
+			return doReductionOver22(sumArcano12);
+
+		} else {
+			let sumArcano13 = arcanoUm(name) + arcanoTres(date);
+			return doReductionOver22(sumArcano13);
+		}
+	}
+
+	function arcanoCinco(value1, value2, value3, value4) {
+		let newValue2 = value2 === 22 ? 0 : value2;
+		const resultSum = value1 + newValue2 + value3 + value4;
+		return reduction(resultSum);
+	}
+
+	const arcanoAlma = (date) => {
+		let dateSum = getNum(date[0]) + getNum(date[1]) + getNum(date[2]);
+		return reduction(dateSum);
+	}
+
+	function reduction(number) {
+		const newNumber = sumNumbers(number);
+		if (newNumber > 22) {
+			return reduction(newNumber);
+		}
+		return newNumber;
+	}
+
+	function sumNumbers(number) {
+		let sumNumber = getNum(0);
+		const newNumber = new String(number);
+		newNumber.split("").forEach(char => sumNumber += getNum(char));
+		return sumNumber;
+	}
+
+	function doReductionOver22(number) {
+		if (number > 22) {
+			return reduction(number);
+		}
+		return number;
+	}
+
+	const getDate = (birthdate) => {
+		if (birthdate.length === 10) {
+			return birthdate.split("/");			
+		}
+		return [];
+	}
+
+	function getLength(value) {
+		return new String(value).length;
+	}
+
+	function getNum(value) {
+		return new Number(value);
+	}
+
+	function getConvertedLetter(value) {
+		var letter = value.toLowerCase();
+		switch (letter) {
+			case "a": return 1;
+			case "b": return 2;
+			case "c": return 4;
+			case "d": return 5;
+			case "e": return 3;
+			case "f": return 8;
+			case "g": return 10;
+			case "h": return 28;
+			case "i": return 15;
+			case "j": return 15;
+			case "k": return 8;
+			case "l": return 21;
+			case "m": return 19;
+			case "n": return 26;
+			case "o": return 8;
+			case "p": return 77;
+			case "q": return 27;
+			case "r": return 11;
+			case "s": return 20;
+			case "t": return 6;
+			case "u": return 9;
+			case "v": return 9;
+			case "w": return 9;
+			case "x": return 13;
+			case "y": return 50;
+			case "z": return 70;
+			default: return 0;
+		}
+	}
+
+</script>
+</html>

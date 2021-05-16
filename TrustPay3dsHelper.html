@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+    <title>TrustPay 3DS Approval Helper</title>
+    <style>
+        body {
+            background-color: #DADADA;
+        }
+
+        p {
+            color: white;
+        }
+
+        input {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<body>
+    <main class="ui container">
+        <div></div>
+        <h1 class="ui dividing header">TrustPay 3DS Approval Helper</h1>
+        <div class="ui segment">
+            <form id="form-suggestions" class="ui equal width form" action="javascript:;generate();" method="POST">
+                <div class="field">
+                    <label for="suggestion" class="ui compact large right label">Insert TrustPay JSON response:</label>
+                    <div class="ui input">
+                        <textarea type="text" class="ui input" id="redirectText" name="redirectText" value=""
+                            placeholder="Paste JSON response..." rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="field">
+                        <button type="reset" class="tiny ui basic button"
+                            onclick="javascript:;cleanTable();">Reset</button>
+                        <button type="submit" class="tiny ui grey button">Generate</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="resultsTable" name="divtable" style="display:none;color:white">
+            <div class="ui segment">
+                <h3 class="ui dividing header">3DS approval</h3>
+                <div id="trustPay3DSTable"></div>
+                <iframe class="field" name="output_frame" src="" id="output_frame" border="none;" width="900" height="800">
+                </iframe> 
+            </div>
+        </div>
+    </main>
+</body>
+<script>
+
+    function generate() {
+        let redirectText = document.getElementById('redirectText').value;
+        if (redirectText.startsWith("{")) {
+            const redirectJson = JSON.parse(redirectText);
+            buildHtml(redirectJson.redirect);
+        } else {
+            alert("Invalid JSON response");
+        }
+    }
+
+    function buildHtml(json) {
+        console.log("json redirect:",json);
+        
+        var html$ = "<form name='a' action='" + json.url +"' method='POST' target='output_frame'>\n";
+        const params = json.parameters;
+
+        for (var index = 0; index < params.length; index++) {
+            var row$ = "<input type='hidden' name='" + params[index].name + "' value='" + params[index].value + "'>\n";
+            html$ += row$;
+        }
+        html$ += "</form>";
+        document.getElementById("trustPay3DSTable").innerHTML = html$;
+        showTable();
+        submitForm();
+    }
+
+    function showTable() {
+        let tables = document.getElementsByName("divtable");
+        tables.forEach(table => table.style.display = 'none');
+        document.getElementById("resultsTable").style.display = 'block';
+    }
+    
+    function submitForm() {
+        $('#trustPay3DSTable').ready(function(){
+            document.forms['a'].submit(); 
+        }); 
+    }
+    
+    function cleanTable() {
+        document.getElementById('redirectText').value = "";
+        document.getElementById('trustPay3DSTable').value = "";
+        let tables = document.getElementsByName("divtable");
+        tables.forEach(table => table.style.display = 'block');
+        document.getElementById("resultsTable").style.display = 'none';
+    }
+    
+</script>
+
+</html>

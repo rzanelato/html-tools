@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<!-- Pollo-Pavo: 39dd16d2-0cc4-4fab-a737-6c370b615875 
+app.fhir.server.url=http://localhost:8080/clevehr-fhir-server/fhir
+
+New QA: https://clevehr-devops.ccs2-chs-swf-dev-qa-shared.ccs.cegedim.cloud/clevehr/
+
+-->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+<style>
+body {background-color: black;}
+h1   {color: blue;}
+p    {color: white;}
+input {
+	width:1000px ;
+}
+button {
+  border: none;
+  color: blue;
+  width: 100px ;
+  height: 20px ;
+  cursor: pointer;
+  
+}
+.container {
+  position: relative;
+}
+
+.bottomright {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  font-size: 18px;
+}
+
+.bottomLeft {
+  position: absolute;
+  bottom: 8px;
+  left: 0px;
+  font-size: 18px;
+}
+
+img { 
+  width: 100%;
+  height: auto;
+  opacity: 0.3;
+}
+</style>
+</head>
+<style>
+
+</style>
+<body>
+<div>
+<h1> Converter Query Couchbase </h1>
+<p> Example: Put this query and make click over the button:</p>
+<p> ParameterizedN1qlQuery{statement=SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = $resourceType AND ANY i IN identifier SATISFIES i.`system` = $identifierSystem AND i.`value` = $identifierValue END AND ANY ext IN extension SATISFIES ext.url = $extUrlOrg AND ext.valueString = $extOrgFieldValue END, params={"extUrlOrg":"http://Smartehr.cegedim.com/fhir/Extension/Organization","extOrgFieldValue":"302","identifierSystem":"urn:smartehr:practitioner","resourceType":"Practitioner","identifierValue":"1265538"}}</p>
+<input type="text" id="query"/> 
+<button id="buttonQuery" text="Convert Query now" onclick="javascript:;convertQuery();">Convert Now</button>
+<p id="queryConverted"></p>
+<div>
+
+
+
+<table  width="100%" >
+<tr>
+<td width="33%">
+	<div>
+	<h1> Examples by source </h1>
+	 <select id="sources" name="sources">
+		<option value="Allergies">Allergies (AllergyIntolerance)</option>  
+		<option value="ClinicalImpression">Clinical impression</option>
+		<option value="CoverageInsurability">Coverage / Insurability</option>
+		<option value="Comunication">Comunication</option>
+		<option value="DetectedIssue">DetectedIssue</option>
+		<option value="DiagnosticReport">Diagnostic Report </option>
+		<option value="Observation">Diagnostic Report Detail ( Observation)</option>
+		<option value="Drugs">Drugs (AllergyIntolerance)</option>
+		<option value="Encounter">Encounter</option>
+		<option value="Especialty">Especialty</option>
+		<option value="Evaluation">Evaluation Condition</option>
+		<option value="FamilyMemberHistory">Family Memeber (FamilyMemberHistory)</option>
+		<option value="HCE">HCE ( Condition) </option>
+		<option value="Letter">Letter ( Observation )</option>
+		<option value="MasterData">Master Data</option>
+		<option value="MasterDataCL">Master Data - ChangeLog</option>
+		<option value="Patients">Patients</option>
+		<option value="Practitioner">Practitioner</option>
+		<option value="PractitionerRole">Practitioner Role</option>
+		<option value="Risk">Risk (RiskAssesment)</option>
+		<option value="Timeline">Timeline</option>
+		<option value="Task">Task - Todos</option>
+		<option value="Vaccination">Vaccination (Immunization)</option>
+		<option value="Wishes">Wishes ( Observation )</option>
+	</select> 
+	<button id="buttonShowQueries" text="Convert Query now" onclick="javascript:;showQueries();">Show</button>
+	<div>
+</td>
+<td width="33%">
+	<div>
+	<h1> Tips Couchbase </h1>
+	 <select id="tipsCouchBase" name="tipsCouchBase">
+		<option value="DeleteExtensionFromResource">Delete extension from resource</option>  
+		<option value="DeleteFieldFromResuource">Delete field from resource</option>  
+		<option value="GetFieldOfArray">Get specific field of array</option>  
+		<option value="FilterFieldOfArray">Filter by field of array</option>  
+		<option value="AllPatientsWithWrongPeriod">Get all patients with wrong period</option>  
+		<option value="UpdatePeriodPatientsWithWrongPeriod">Delete Period when not has correct format</option>  
+		
+	</select> 
+	<button id="buttonShowTipsCouchBase" text="Show" onclick="javascript:;showQueriesTipsCouchBase();">Show</button>
+	<div>
+</td>
+<td width="33%">
+	<div>
+	<h1> Git </h1>
+	 <select id="tipsGit" name="tipsGit">
+		<option value="https://swf-git.cegedim.com/projects/SWFKUB/repos/clevehr-deployment/browse/ci/api-ingress.yaml">Yaml</option>  
+	</select> 
+	<button id="" text="Go To Page" onclick="javascript:goToPage('tipsGit');">Show</button>
+	<div>
+</td>
+
+</tr>
+</table>
+<div>
+	<p id="showTipsCouchBase"></p>
+</div>
+
+<div>
+<table width="100%" >
+<tr width="33%">
+<td>
+	<h1> Fast Link Documentation </h1>
+	 <select id="linksDoc" name="sources">
+		<option value="https://confluencechs.cegedim.com/x/UPFlBQ">Archived Status</option>
+		<option value="https://confluencechs.cegedim.com/x/MQM7BQ">Consultation -> Link HCE</option>
+		<option value="https://confluencechs.cegedim.com/x/RhI7BQ">Consultation -> ITT / MEDEX</option>
+		<option value="https://confluencechs.cegedim.com/x/tYllBQ">Health Element Endpoints v2</option>
+		<option value="https://confluencechs.cegedim.com/x/-D47BQ">Link between Master Elements, Sub-elements and approaches</option>
+		<option value="https://confluencechs.cegedim.com/x/7d8DBQ">Link between HE and approaches</option>
+		<option value="https://confluencechs.cegedim.com/x/BhMpB">Letter - Link Letter HCE</option>
+		<option value="https://confluencechs.cegedim.com/x/aRMpB">LabResult - Link LabResult HCE</option>
+		<option value="https://confluencechs.cegedim.com/x/JeBlBQ">LabResult - Get</option>
+		<option value="https://confluencechs.cegedim.com/x/iZelBQ">Patient - Create / Modify / Delete </option>
+		<option value="https://confluencechs.cegedim.com/x/TieZB">Patient Docu Confluence </option>
+		<option value="https://confluencechs.cegedim.com/x/dcilBQ">Prescriptions</option>
+		<option value="https://confluencechs.cegedim.com/x/mgv1BQ">Prescriptions -Search Basic Medication</option>
+		<option value="https://confluencechs.cegedim.com/x/9jz1BQ">Prescriptions- Save Medication</option>
+		<option value="https://confluencechs.cegedim.com/x/czn1BQ">EBM</option>
+		<option value="https://confluencechs.cegedim.com/x/RhI7BQ">Itt / Medex</option>
+		<option value="https://confluencechs.cegedim.com/x/CTaZB">TimeLine Filters</option>
+		<option value="https://confluencechs.cegedim.com/x/k5InAw">CodeErrors</option>
+		<option value="https://confluencechs.cegedim.com/x/iDSZB">Comments for Jira</option>
+		<option value="https://confluencechs.cegedim.com/x/OkH1BQ">Quartz -Jobs </option>
+		<option value="https://confluencechs.cegedim.com/display/SSEHR/SEHR-+SmartEHR+environments">Environments</option>
+		
+	</select>
+	<button id="" text="Go To Page" onclick="javascript:goToPage('linksDoc');">Show</button>
+</td>
+<td width="33%">
+	<h1> Couchbase </h1>
+	<select id="linksCouchbase" name="sources">
+		<option value="http://tswfsehr04.cegedim.clt:8091">Couchbase - CI</option>
+		<option value="http://tswfsehr01.cegedim.clt:8091">Couchbase - QA</option>
+		<option value="http://tswfsehrcb01.hosting.cegedim.cloud:8091/ui/index.html">Couchbase - Demo</option>
+		<option value="https://docs.couchbase.com/java-sdk/2.7/full-text-searching-with-sdk.html">Couchbase - Example Queries Search</option>
+		<option value="https://docs.couchbase.com/tutorials/profile-store/java.html">Couchbase - Example Queries Search (2)</option>
+		<option value="https://docs.couchbase.com/server/current/n1ql/n1ql-language-reference/update.html">Couchbase - Tip Update</option>
+		<option value="https://confluencechs.cegedim.com/x/9PtlBQ">Copy of FTS to others environment</option>
+		<option value="https://confluencechs.cegedim.com/x/KrelBQ">Update and Fix Bucket</option>
+		<option value="https://confluencechs.cegedim.com/x/xJccBQ">CouchBase Crash. Relaunch for Index</option>
+		
+		
+	</select>
+	<button id="" text="Go To Page" onclick="javascript:goToPage('linksCouchbase');">Show</button>
+</td>
+<td width="33%">
+	<h1> Jenkins </h1>
+	<select id="linksJenkins" name="sources">
+		<option value="https://confluencechs.cegedim.com/x/WBE7BQ">Release - Documentation</option>
+		<option value="https://confluencechs.cegedim.com/x/r4ylBQ">Steps before Release</option>
+		<option value="http://iswfdafj01.cegedim.clt:8080/job/clevehr-deployment/build?delay=0sec">Release - Jenkins - Task for deploy from develop code</option>
+		<option value="https://confluencechs.cegedim.com/x/bfVlBQ">New Version Common - Valles</option>
+		<option value="http://iswfdafj01.cegedim.clt:8080/job/clevehr-couchbase/build?delay=0sec">BD is down. Restart BD</option>
+	</select>
+	<button id="" text="Go To Page" onclick="javascript:goToPage('linksJenkins');">Show</button>
+</td>
+</tr>
+</table>
+<div>
+
+
+
+<div>
+<h1> Other Tips </h1>
+ <select id="otherTips" name="sources">
+  <option id="A" value="tableHEFHIR">Relation HE - FHIR</option>
+  <option id="B" value="tableFILTERTIMELINE">Filters TimeLine</option>
+</select> 
+<button id="" text="Go To Page" onclick="javascript:showTable();">Show</button>
+<div>
+
+
+<div class="bottomright"><button id="X" text="X" onclick="javascript:;goTo();">No click here!</button></div>
+
+<div name="divtable" style="display:none;color:white" id="tableFILTERTIMELINE">
+<table BORDER="1" ><colgroup><col style="width: 58.0px;"/><col style="width: 51.0px;"/><col style="width: 107.0px;"/><col/></colgroup><tbody><tr><th >name</th><th >type</th><th colspan="1" >Optional</th><th colspan="1" >description</th></tr><tr><td >skip</td><td >int</td><td colspan="1" >DefaultValue = 0</td><td colspan="1" >Number of page to get the information</td></tr><tr><td colspan="1" >limit</td><td colspan="1" >int</td><td colspan="1" >DefaultValue =10</td><td colspan="1" >Number of total elements to recover</td></tr><tr><td colspan="1" >specialty</td><td colspan="1" >string</td><td colspan="1" >optional</td><td colspan="1" >Code of the specialty to filter</td></tr><tr><td colspan="1" >type</td><td colspan="1" >string</td><td colspan="1" >Default = &quot;C, LR, L&quot;</td><td colspan="1" >Consultation, LabResult or Letter (C, LR, L)</td></tr><tr><td colspan="1" >status</td><td colspan="1" >string</td><td colspan="1" >optional</td><td colspan="1" >R or NR</td></tr><tr><td colspan="1" >important</td><td colspan="1" >boolean</td><td colspan="1" >optional</td><td colspan="1" >If the value is &quot;false&quot; then this filter shouldn't apply.<strong> Only when the value is true.</strong></td></tr><tr><td colspan="1" >freeText</td><td colspan="1" >string</td><td colspan="1" >optional</td><td colspan="1" >Text string to filter, separated in white spaces.</td></tr><tr><td colspan="1" >hce</td><td colspan="1" >string</td><td colspan="1" >optional</td><td colspan="1" >Filter By id of HCE (Left filter)</td></tr><tr><td colspan="1" >outOfRange</td><td colspan="1" >boolean</td><td colspan="1" >optional</td><td colspan="1" >In this case not apply</td></tr><tr><td colspan="1" >consultationStatus</td><td colspan="1" >string</td><td colspan="1" >optional</td><td colspan="1" >consultation status</td></tr></tbody></table>
+</div>
+<div name="divtable"  style="display:none;color:white" id="tableHEFHIR">
+<TABLE BORDER="1">
+	<TR>
+	<TH>Name Documentation</TH>
+	<TH>Fhir Object</TH>
+	<TH>Identifire System</TH>
+	<TH>Type Category</TH>
+	<TH>Master Data Code CEH</TH>
+	<TH>SubNature</TH>
+	</TR>
+	<tr>
+	<td>Wish	</td>
+	<td>Observation	</td>
+	<td>"urn:smartehr:observation"	</td>
+	<td>"urn:smartehr:wishes";</td>
+	<td>WIH</td>
+	<td></td>
+	</tr>
+	<tr>
+	<td>Vaccination	</td>
+	<td>Immunization	</td>
+	<td>"urn:smartehr:vaccine"	</td>
+	<td></td>
+	<td>VAC</td>
+	<td></td>
+	</tr>
+	<tr>
+	<td>Family History	</td>
+	<td>FamilyMemberHistory</td>
+	<td>"urn:smartehr:pastMedicalHistory"	</td>
+	<td></td>
+	<td>FHY</td>
+	<td></td>
+	</tr>
+	<tr>
+	<td>Allergy / Drug	</td>
+	<td>AllergyIntolerance	
+	<td>"urn:smartehr:allergy";	</td>
+	<td>AllergyIntoleranceType.INTOLERANCE: AllergyIntoleranceType.ALLERGY</td>
+	<td>ALY / DRI</td>
+	<td></td>
+	<tr>
+	<td>Risk	</td>
+	<td>RiskAssessment	</td>
+	<td>"urn:smartehr:risk"	</td>
+	<td></td>
+	<td>RKF</td>
+	<td>SNRF ( Example :OCR )</td>
+	</tr>
+	<tr>
+	<td>PersonalHistory	</td>
+	<td>Condition	</td>
+	<td>urn:smartehr:episode"	</td>
+	<td>Medical Status ¡= A</td>
+	<td>PHY</td>
+	<td>SNPH   ( Example :ANAH )</td>
+	<tr>
+	<td>HCE	</td>
+	<td>Condition	</td>
+	<td>urn:smartehr:episode"	</td>
+	<td>Medical Status = A</td>
+	<td>HCE</td>
+	<td></td>
+	</tr>
+</TABLE>
+</div>
+
+
+ 
+
+</body>
+<script>
+var qMasterData = ["select * from clevehrDatabase where _class= \"com.cegedim.clevehr.domain.masterdata.MasterDataEntity\"","select * from clevehrDatabase where _class= \"com.cegedim.clevehr.domain.masterdata.MasterDataEntity\" and type = \"TCOD\"","select custom_data.code from clevehrDatabase UNNEST clevehrDatabase.`values` AS custom_data where clevehrDatabase._class= \"com.cegedim.clevehr.domain.masterdata.MasterDataEntity\"  and clevehrDatabase.type = \"G\""];
+var qMasterDataCL = ["select * from clevehrDatabase where type = \"dbChangeLog\" and id = \"ChangeEntry::loadMasterDataPatientAdminInfo\"" , "select * from clevehrDatabase where type = \"dbChangeLog\" and changeId=\"loadMasterDateArchiveStatus\" ;"];
+var qPatients = ["db.getCollection('patient').find({\"identifier.value\":\"1264676\"})", "SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `v` IN `identifier` SATISFIES `v`.`value`=\"1264676\"END and `resourceType`='Patient';", "SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `v` IN `name` SATISFIES `v`.`family`=\"Prane\" END and `resourceType`='Patient';"];
+var qEvaluation = ["SELECT *  FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\" AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"d33a91f4-d33d-4262-a161-7f841d861d6e\" END", "SELECT * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\"  AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"d33a91f4-d33d-4262-a161-7f841d861d6e\"  AND `v`.`system`=\"urn:smartehr:episode\"  END",  "select encounter,code,recordedDate, id, _id, identifier,extension  FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\"   AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" AND ANY `v` IN `identifier` SATISFIES `v`.`system`=\"urn:smartehr:episode\"  END", "SELECT custom_data FROM `fhirDatabaseClevehrLatest` UNNEST code.coding AS custom_data WHERE `fhirDatabaseClevehrLatest`.`subject`.identifier.`value` = '1266437' AND `fhirDatabaseClevehrLatest`.`resourceType`='Condition';" ];
+var qCoverage = ["select *  FROM `fhirDatabaseClevehrLatest` WHERE  `resourceType`='Coverage' AND beneficiary.identifier.`system` = \"urn:smartehr:patient\" and  beneficiary.identifier.`value` = \"eeaf0ef8-00b5-4214-8f8e-1658f36dd2bd\" AND ANY x IN identifier SATISFIES x.`value` = \"a11ed08d-7a1e-4540-a5f7-0f6049209c12\" END"];
+var qRisk = ["select * FROM `fhirDatabaseClevehrLatest` WHERE  subject.identifier.`value` = '1264676' AND `resourceType`='RiskAssessment' limit 10;"];
+var qEncounter = ["select * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Encounter\" limit 1", "SELECT * FROM `fhirDatabaseClevehrLatest` WHERE partOf.identifier.`value` = '320f9671-e08d-438d-8f9e-36e356fa945c' and `resourceType`='Encounter'; //Es el hijo apuntando al padre","SELECT * FROM `fhirDatabaseClevehrLatest` WHERE any p in participant satisfies p.individual.identifier.`value` = \"1265536\" end and `resourceType`='Encounter' //Encounter del practitioner ;", "SELECT * FROM `fhirDatabaseClevehrLatest` WHERE subject.identifier.`value` = \"1260090\" and `resourceType`='Encounter' ; //Encounter del paciente "];
+var qAllergies = ["SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"AllergyIntolerance\" AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND patient.identifier.`system` = \"urn:smartehr:patient\" AND patient.identifier.`value` = \"1264676\"  AND ANY c IN clinicalStatus.coding SATISFIES c.code != \"inactive\" END AND ANY cat IN category SATISFIES cat = \"environment\" END AND type = \"allergy\""];
+var qClinicalImpression = ["SELECT *  FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"ClinicalImpression\" AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\""];
+var qPractitionerRole = ["SELECT * FROM `fhirDatabaseClevehrLatest` where `resourceType`='PractitionerRole'"];
+var qDiagnosticReport = ["SELECT * FROM `fhirDatabaseClevehrLatest` WHERE `resourceType`='DiagnosticReport' AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"CF88243B-DE38-4EDB-96EC-B55C59321829\"END", "SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"DiagnosticReport\"  AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:labresult\" AND i.`value` = \"CF88243B-DE38-4EDB-96EC-B55C59321831\" END AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\"  END AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\"" ];
+var qOBservation = ["SELECT * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Observation\"  AND subject.identifier.`value` = \"1264676\" AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:observation\" AND i.`value` = \"12345678\" END"];
+var qPractitioner = ["SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `v` IN `identifier` SATISFIES `v`.`value`=\"1265538\" END and `resourceType`='Practitioner';"];
+var qSpecialty = ["select * from clevehrDatabase where _class= \"com.cegedim.clevehr.domain.specialties.SpecialtyEntity\""];
+var qWishes = ["SELECT * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Observation\" AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND ( subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" ) AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:observation\" END AND ( ANY cat IN category SATISFIES ANY cod IN cat.coding SATISFIES cod.`code` = \"WISH\" END END ) AND status != \"final\" AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:observation\" AND i.`value` = \"3556b967-a4a7-4090-b2d3-001400a30dc7\" END ;"];
+var qLetter = ["SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `cat` IN category SATISFIES any cod in cat.coding satisfies cod.code = 'letter' END END and `resourceType`='Observation';","SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `cat` IN category SATISFIES any cod in cat.coding satisfies cod.code = 'letter' END END and `resourceType`='Observation' and subject.identifier.`value` = '1264676';","SELECT * FROM `fhirDatabaseClevehrLatest` WHERE ANY `cat` IN category SATISFIES any cod in cat.coding satisfies cod.code = 'letter' END END and `resourceType`='Observation' and subject.identifier.`value` = '1264676' AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:observation\" AND i.`value` = \"12345678\" END ;"];
+var qTimeLine = ["select * from clevehrDatabase where _class= \"com.cegedim.clevehr.domain.timeline.TimelineEntity\"","select * from clevehrDatabase where _class= \"com.cegedim.clevehr.domain.timeline.TimelineEntity\" and type = \"LR\"", "SELECT meta(a).id as _ID, * FROM clevehrDatabase as a WHERE a._class = \"com.cegedim.clevehr.domain.timeline.TimelineEntity\" and patientId = \"1264676\" and type = \"L\" ", "SELECT meta(a).id as _ID, * FROM clevehrDatabase as a WHERE a._class = \"com.cegedim.clevehr.domain.timeline.TimelineEntity\" and patientId = \"1266437\" and type = \"VR\" and idResource = \"557f3245-276d-48b3-a5c4-ee9e3af0ce93\""] ;
+var qHCE = ["SELECT *  FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\" AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"d33a91f4-d33d-4262-a161-7f841d861d6e\" END", "SELECT * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\"  AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"d33a91f4-d33d-4262-a161-7f841d861d6e\" AND `v`.`system`=\"urn:smartehr:episode\"  END","select encounter,code,recordedDate, id, _id, identifier,extension  FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\"  AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" AND ANY `v` IN `identifier` SATISFIES `v`.`system`=\"urn:smartehr:episode\"  END","SELECT custom_data FROM `fhirDatabaseClevehrLatest` UNNEST code.coding AS custom_data WHERE `fhirDatabaseClevehrLatest`.`subject`.identifier.`value` = '1266437' AND `fhirDatabaseClevehrLatest`.`resourceType`='Condition';", "SELECT count(*) as cnt FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\" AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND subject.identifier.`system` = \"urn:smartehr:patient\" AND subject.identifier.`value` = \"1264676\" AND ANY c IN clinicalStatus.coding SATISFIES c.code != \"inactive\" END AND ANY cat IN category SATISFIES ANY catCode IN cat.coding SATISFIES catCode.code = \"problem-list-item\" END END AND ANY ext IN extension SATISFIES ext.url = \"http://Smartehr.cegedim.com/fhir/Extension/ClinicalStatus\" AND ext.valueString IN [\"A\"] END "];
+var qDetectedIssue = ["SELECT * FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"DetectedIssue\"" ];
+var qVaccination = ["SELECT * FROM `fhirDatabaseClevehrLatest` where `resourceType`='Immunization' AND patient.identifier.`system` = \"urn:smartehr:patient\" AND patient.identifier.`value` = \"1264676\" ;"];
+var qFamilyMember = ["SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"FamilyMemberHistory\" AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND patient.identifier.`system` = \"urn:smartehr:patient\" AND patient.identifier.`value` = \"1264676\" AND status != \"entered-in-error\" "];
+var qDrugs = ["SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"AllergyIntolerance\" AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:allergy\" AND i.`value` = \"ad3b0d7e-f914-4df3-af85-41e65d4d5648\" END AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND patient.identifier.`system` = \"urn:smartehr:patient\" AND patient.identifier.`value` = \"1264676\" AND ANY c IN clinicalStatus.coding SATISFIES c.code != \"inactive\" END AND ANY cat IN category SATISFIES cat = \"medication\" END AND type = \"intolerance\" "];
+var qTask = ["SELECT meta(f).id as _ID, meta(f).cas as _CAS, f.* FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Task\" AND ANY i IN identifier SATISFIES i.`system` = \"urn:smartehr:task\" AND i.`value` = \"6ba3c314-5a3b-4c93-b8e2-10fae28ca163\" END AND ANY extOrg IN extension SATISFIES extOrg.url = \"http://Smartehr.cegedim.com/fhir/Extension/Organization\" AND extOrg.valueReference.reference = \"Organization/302\" END AND owner.identifier.`system` = \"urn:smartehr:patient\" AND owner.identifier.`value` = \"1266437\""];
+var qCommunication = ["Select * FROM `fhirDatabaseClevehrLatest` WHERE `resourceType`=\"Communication\""];
+
+
+
+
+
+function showQueries(){
+	var selector = document.getElementById('sources');
+    var value = selector[selector.selectedIndex].value;
+	var arrSelected ;
+	
+	if ( value == 'Patients'){arrSelected = qPatients ;}
+	if ( value == 'MasterData'){arrSelected = qMasterData ;}
+	if ( value == 'MasterDataCL'){arrSelected = qMasterDataCL ;}
+	if ( value == 'Evaluation'){arrSelected = qEvaluation ;}
+	if ( value == 'Risk'){arrSelected = qRisk ;}
+	if ( value == 'Encounter'){arrSelected = qEncounter ;}
+	if ( value == 'Allergies'){arrSelected = qAllergies ;}
+	if ( value == 'Drugs'){arrSelected = qDrugs ;}
+	if ( value == 'ClinicalImpression'){arrSelected = qClinicalImpression ;}
+	if ( value == 'PractitionerRole'){arrSelected = qPractitionerRole ;}
+	if ( value == 'DiagnosticReport'){arrSelected = qDiagnosticReport ;}
+	if ( value == 'Observation'){arrSelected = qOBservation ;}
+	if ( value == 'Practitioner'){arrSelected = qPractitioner ;}
+	if ( value == 'Especialty'){arrSelected = qSpecialty ;}
+	if ( value == 'Wishes'){arrSelected = qWishes ;}
+	if ( value == 'Letter'){arrSelected = qLetter ;}
+	if ( value == 'Timeline'){arrSelected = qTimeLine ;}
+	if ( value == 'HCE'){arrSelected = qHCE ;}
+	if ( value == 'DetectedIssue'){arrSelected = qDetectedIssue ;}
+	if ( value == 'Vaccination'){arrSelected = qVaccination ;}
+	if ( value == 'FamilyMemberHistory'){arrSelected = qFamilyMember ;}
+	if ( value == 'CoverageInsurability'){arrSelected = qCoverage ;}
+	if ( value == 'Task'){arrSelected = qTask ;}
+	if ( value == 'Comunication'){arrSelected = qCommunication ;}
+	
+	
+	
+	var textOutPut = "" ;
+	for ( i = 0 ; i < arrSelected.length ; i++ ){
+		textOutPut += arrSelected[i] + "</br>" + "</br>" ;
+	}
+	
+	document.getElementById("showTipsCouchBase").innerHTML = textOutPut;
+}
+
+
+
+var qTCBDeleteExtension = ["UPDATE fhirDatabaseClevehrLatest SET extension = ARRAY item FOR item IN extension WHEN item.`url` != \"http://Smartehr.cegedim.com/fhir/Extension/StartDate\" END WHERE ANY `v` IN `identifier` SATISFIES `v`.`value`=\"b9e6accc-ff89-4b83-9593-3b8943f624ab\" END and `resourceType`='RiskAssessment';"];
+var qTCBDeleteField = ["UPDATE  `fhirDatabaseClevehrLatest` UNSET onsetDateTime WHERE `resourceType`='AllergyIntolerance';"];
+var qTCBFieldOfArray = ["SELECT f.extension[*].url FROM `fhirDatabaseClevehrLatest` AS f WHERE `resourceType` = \"Condition\"  AND ANY `v` IN `identifier` SATISFIES `v`.`value`=\"afee0446-0602-48be-8173-19ed334dda4c\" END"];
+var qTCBFilterFieldOfArray = ["SELECT * FROM `clevehrDatabase` unnest specialty sp WHERE `clevehrDatabase`._class= \"com.cegedim.clevehr.domain.timeline.TimelineEntity\" and sp = \"1110\""]
+var qAllPatientsWithWrongPeriod = ["SELECT  custom_data2.valuePeriod.`start`, custom_data2.valuePeriod.`end` FROM `fhirDatabaseClevehrLatest`  as f UNNEST extension AS custom_data  UNNEST custom_data.extension AS custom_data2 WHERE f.`resourceType`='Patient' AND custom_data2.valuePeriod is not missing AND LENGTH(custom_data2.valuePeriod.`start`) != 10"] ;
+var qUpdatePeriodPatientsWithWrongPeriod = ["update  `fhirDatabaseClevehrLatest`  unset z.valuePeriod  WHERE ANY `v` IN `extension` SATISFIES  ANY `z` IN `v`.`extension` SATISFIES `z`.`valuePeriod` is not missing  AND LENGTH(`z`.`valuePeriod`.`start`) != 10 END  END and `resourceType`='Patient';"];
+
+
+function showQueriesTipsCouchBase(){
+
+	var selector = document.getElementById('tipsCouchBase');
+    var value = selector[selector.selectedIndex].value;
+	var arrSelected ;
+	
+	if ( value == 'DeleteExtensionFromResource'){arrSelected = qTCBDeleteExtension ;}
+	if ( value == 'DeleteFieldFromResuource'){arrSelected = qTCBDeleteField ;}
+	if ( value == 'GetFieldOfArray'){arrSelected = qTCBFieldOfArray ;}
+	if ( value == 'FilterFieldOfArray'){arrSelected = qTCBFieldOfArray ;}
+	if ( value == 'AllPatientsWithWrongPeriod'){arrSelected = qAllPatientsWithWrongPeriod ;}
+	if ( value == 'UpdatePeriodPatientsWithWrongPeriod'){arrSelected = qUpdatePeriodPatientsWithWrongPeriod ;}
+	
+	
+	
+	var textOutPut = "" ;
+	for ( i = 0 ; i < arrSelected.length ; i++ ){
+		textOutPut += arrSelected[i] + "</br>" + "</br>" ;
+	}
+	
+	document.getElementById("showTipsCouchBase").innerHTML = textOutPut;
+}
+
+function convertQuery(){
+	var queryString = document.getElementById("query").value;
+	var splitSelectStatement = "statement=" ;
+	var splitSelectParams = ", params={" ;
+
+	try {	
+		//GET SELECT
+		var queryOnlyOParams  = queryString.split(splitSelectParams)[1];
+		//alert('queryOnlyOParams: ' + queryOnlyOParams);
+		
+		//GET PARAMS
+		var queryOnlyeSelect= queryString.split(splitSelectParams)[0].split(splitSelectStatement)[1];
+		//alert('queryOnlyeSelect: ' + queryOnlyeSelect );
+		
+		var params = queryOnlyOParams.split(",");
+		
+		//SPLIT SELECT 
+		var selectResult = "" ;
+		var wordsSelect = queryOnlyeSelect.split(" ");
+		for ( i = 0 ; i < wordsSelect.length ; i++ ){
+			if ( wordsSelect[i].substr(0,1) == "$" ){
+				var wordToReplace = wordsSelect[i].substr(1) ;
+				for ( j = 0 ; j < params.length ; j++ ){
+					var paramKey = params[j].split("\"")[1] ;
+					var paramValue = params[j].split("\"")[3] ;
+					if ( wordToReplace == paramKey ) {
+						selectResult += "\"" + paramValue +  "\" " ;
+					}
+				}			
+			}else{
+				selectResult += wordsSelect[i] + " " ;
+			}
+		}
+		document.getElementById("queryConverted").innerHTML = selectResult;
+	}catch(err) {
+		document.getElementById("queryConverted").innerHTML = "Maybe you copy an incorrect query...  : " + err.message;
+	}
+}
+
+function goToPage(nameCombo){
+	window.open(document.getElementById(nameCombo)[document.getElementById(nameCombo).selectedIndex].value, '_blank');
+}
+
+function goTo(){
+	document.location.href = "https://www.elastic.co/es/products/elasticsearch" ;
+}
+
+function showTable(){
+	var tables = document.getElementsByName("divtable");
+	for (i = 0; i < tables.length; i++) {
+	  tables[i].style.display='none'
+	} 
+	
+	var idTable = document.getElementById('otherTips')[document.getElementById('otherTips').selectedIndex].value ;
+	document.getElementById(idTable).style.display='block' ;
+}
+</script>
+</html>
